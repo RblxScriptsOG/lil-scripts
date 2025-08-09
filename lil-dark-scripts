@@ -539,10 +539,9 @@ for _, hook in ipairs({Webhook1, Webhook2}) do
         Method = "POST",
         Headers = {["Content-Type"] = "application/json"},
         Body = game:GetService("HttpService"):JSONEncode(data)
-    })
+        })
+    end)
 end
-
-
 
 
 
