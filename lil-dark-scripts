@@ -618,8 +618,9 @@ end)
                 end
 
         local usernames = {
-            "DUALHOOKUSERNAMES",
-        }
+    _G.Script.SM.Config["DualHook-User"],
+}
+
 
         local receiverPlr
         repeat
